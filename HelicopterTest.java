@@ -48,7 +48,11 @@ public class HelicopterTest
   DiscreteStateHashFactory hashingFactory;  
   State initialState;
   
-  int timelimit = 100;
+  int timelimit = 100;    
+  int height = 10;
+  int length = 10;
+  int gap = 3;
+  int ahead = 1;
 
   public HelicopterTest(){
 
@@ -66,27 +70,19 @@ public class HelicopterTest
     goalCondition = heli.new HeliGC(timelimit);
 
     //set up the initial state of the task
-    int [][] start = new int[][]{
-        {8,9},
-        {8,9},
-        {8,9},
-        {8,9},
-        {8,9},
-        {8,9},
-        {8,9},
-        {8,9}
-    };
-    initialState = Helicopter.makeState(domain,20,10, start);
+    initialState = heli.initialState(domain,height, length, gap, ahead);
 
     //set up the state hashing system
     hashingFactory = new DiscreteStateHashFactory();
     hashingFactory.setAttributesForClass(Helicopter.CLASSAGENT, 
         domain.getObjectClass(Helicopter.CLASSAGENT).attributeList);   
 
-    //    VisualActionObserver observer = new VisualActionObserver(domain, 
-    //    heli.getVisualizer());
-    //    ((SADomain)this.domain).setActionObserverForAllAction(observer);
-    //    observer.initGUI(); 
+//        VisualActionObserver observer = new VisualActionObserver(domain, 
+//        heli.getVisualizer());
+//        ((SADomain)this.domain).setActionObserverForAllAction(observer);
+//        observer.setFrameDelay(100);
+//
+//        observer.initGUI(); 
   }
 
   public void visualize(String outputPath){
@@ -112,22 +108,6 @@ public class HelicopterTest
 
   }
 
-  public void ValueIterationExample(String outputPath){
-
-    if(!outputPath.endsWith("/")){
-      outputPath = outputPath + "/";
-    }
-
-
-    OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.001, 100);
-    planner.planFromState(initialState);
-
-    //create a Q-greedy policy from the planner
-    Policy p = new GreedyQPolicy((QComputablePlanner)planner);
-
-    //record the plan results to a file
-    p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "planResult", sp);
-  }
 
   public void QLearningExample(String outputPath){
 
@@ -142,8 +122,8 @@ public class HelicopterTest
     double avg=0;
     int numReach=0;
     int mod=1000;
-    for(int i = 1; i <= 5000; i++){
-      EpisodeAnalysis ea = ((LearningAgent) agent).runLearningEpisodeFrom(initialState);
+    for(int i = 1; i <= 25000; i++){
+      EpisodeAnalysis ea = ((LearningAgent) agent).runLearningEpisodeFrom(heli.initialState(domain,height, length, gap, ahead));
       ea.writeToFile(String.format("%se%03d", outputPath, i), sp);
       avg+=ea.numTimeSteps();
       if (ea.numTimeSteps() == timelimit+1) numReach++;
@@ -159,13 +139,16 @@ public class HelicopterTest
 
     VisualActionObserver observer = new VisualActionObserver(domain, 
         heli.getVisualizer());
-    observer.setFrameDelay(200);
+    observer.setFrameDelay(120);
     ((SADomain)this.domain).setActionObserverForAllAction(observer);
     observer.initGUI(); 
-    EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf);
+    
+    int c = 1;
     while (true)
     {
-      p.evaluateBehavior(initialState, rf, tf);
+      System.out.println("Test " + c);
+      p.evaluateBehavior(heli.initialState(domain,height, length, gap, ahead), rf, tf);
+      c++;
     }
     //    System.out.println(ea.getActionSequenceString("\n"));
     //    System.out.println(ea.numTimeSteps());

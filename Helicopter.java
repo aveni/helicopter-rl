@@ -40,11 +40,11 @@ import burlap.oomdp.visualizer.Visualizer;
 public class Helicopter implements DomainGenerator
 {
   public static final String TIME = "time";
-  public static final String MAP = "map";
+  public static final String SIGHT = "sight";
   public static final String CEIL = "ceil";
   public static final String FLOOR = "floor";
   public static final String HEIGHT = "height";
-
+  
   public static final String ATTY = "y";
   public static final String CLASSAGENT = "agent";
 
@@ -55,57 +55,14 @@ public class Helicopter implements DomainGenerator
   public static final String PFEND = "end";
 
 
-  //  protected int [][] map = new int[][]{
-  //      {1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1}
-  //  };
+  private int [][] map;
 
-  //  protected int [][] map = new int[][]{
-  //      {1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-  //      {1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1},
-  //      {1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1},
-  //      {1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
-  //      {1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1}
-  //  };
 
   @Override
   public Domain generateDomain()
   {
     SADomain domain = new SADomain();
-
+    
     Attribute time = new Attribute(domain, TIME, AttributeType.INT);
     time.setLims(0, 1000000);
     time.hidden = true;
@@ -119,45 +76,69 @@ public class Helicopter implements DomainGenerator
 
     Attribute ceil = new Attribute(domain, CEIL, AttributeType.INTARRAY);
     Attribute floor = new Attribute(domain, FLOOR, AttributeType.INTARRAY);
-    ceil.hidden = true;
-    floor.hidden = true;
 
-
-    ObjectClass map = new ObjectClass(domain, MAP);
-    map.addAttribute(ceil);
-    map.addAttribute(floor);
-    map.addAttribute(height);
+    ObjectClass sight = new ObjectClass(domain, SIGHT);
+    sight.addAttribute(ceil);
+    sight.addAttribute(floor);
+    sight.addAttribute(height);
 
     new Movement(ACTIONSTAY, domain, 0);
     new Movement(ACTIONUP, domain, 1);
     new Movement(ACTIONDOWN, domain, 2);
-    System.out.println(map.numObservableAttributes());
+    //System.out.println(sight.numObservableAttributes());
 
     return domain;
   }
 
-  public static State makeState(Domain domain, int height, int h0, int[][] start){
+  public State initialState(Domain domain, int height, int length, int gap, int ahead){
     State s = new State();
 
     ObjectInstance agent = new ObjectInstance(domain.getObjectClass(CLASSAGENT), "agent0");
-    agent.setValue(ATTY, h0);
+    agent.setValue(ATTY, height/2);
     agent.setValue(TIME, 0);
     s.addObject(agent);
 
-    ObjectInstance map = new ObjectInstance(domain.getObjectClass(MAP), "map");
-    int[] ceil = new int[start.length];
-    int[] floor = new int[start.length]; 
+    map = new int[2][length];
+    map[0][0] = height/2 - gap/2 - 1;
+    map[1][0] = height - map[0][0]-gap;
+    
+    for (int i=1; i<map[0].length; i++)
+    {
+      int pastceil = map[0][i-1];
+      
+      if (pastceil == 0)
+      {
+        map[0][i] = pastceil + ((int)(2*Math.random()));
+        map[1][i] = height - map[0][i] -gap;        
+      }
+      else if (pastceil == height-gap)
+      {
+        map[0][i] = pastceil - ((int)(2*Math.random()));
+        map[1][i] = height - map[0][i]-gap;        
+      }
+      else
+      {
+        map[0][i] = pastceil + ((int)(3*Math.random()) - 1);
+        map[1][i] = height - map[0][i]-gap;
+      }
+    }
+    
+    
+    ObjectInstance sight = new ObjectInstance(domain.getObjectClass(SIGHT), "sight");
+    int[] ceil = new int[ahead];
+    int[] floor = new int[ahead];
+    
     for (int i=0; i<ceil.length; i++)
     {
-      ceil[i] = start[i][0];
-      floor[i] = start[i][1];
+      ceil[i] = map[0][i];
+      floor[i] = map[1][i];
     }
-    map.setValue(CEIL, ceil);
-    map.setValue(FLOOR, floor);
-    map.setValue(HEIGHT, height);
-    s.addObject(map);
+    sight.setValue(CEIL, ceil);
+    sight.setValue(FLOOR, floor);
+    sight.setValue(HEIGHT, height);
+    s.addObject(sight);
 
-    System.out.println(Arrays.toString(map.getObservableFeatureVec()));
+//    System.out.println(Arrays.toString(sight.getObservableFeatureVec()));
     return s;
   }
 
@@ -185,37 +166,17 @@ public class Helicopter implements DomainGenerator
     
     public int[][] nextCeilFloor(State s)
     {
-      ObjectInstance map = s.getObject(MAP);
-      int[] ceil = map.getIntArrayValue(CEIL);
-      int[] floor = map.getIntArrayValue(FLOOR);
-      int height = map.getDiscValForAttribute(HEIGHT);
-
-      int[][] arr =  new int[2][ceil.length];
-      for (int i=0; i<ceil.length-1; i++)
-      {
-        arr[0][i] = ceil[i+1];
-        arr[1][i] = floor[i+1];
-      }
-      int gap = 4;
-      int pastceil = arr[0][ceil.length-2];
+      ObjectInstance sight = s.getObject(SIGHT);
+      int[] ceil = new int[sight.getIntArrayValue(CEIL).length];
+      int[] floor = new int[ceil.length];
       
-      if (pastceil == 0)
+      for (int i=0; i<ceil.length; i++)
       {
-        arr[0][ceil.length-1] = pastceil + 1;
-        arr[1][floor.length-1] = height - arr[0][ceil.length-1]-gap;        
+        ceil[i] = map[0][i+1];
+        floor[i] = map[1][i+1];
       }
-      else if (pastceil == height-gap)
-      {
-        arr[0][ceil.length-1] = pastceil - 1;
-        arr[1][floor.length-1] = height - arr[0][ceil.length-1]-gap;        
-      }
-      else
-      {
-        arr[0][ceil.length-1] = pastceil + ((int)(3*Math.random()) - 1);
-        arr[1][floor.length-1] = height - arr[0][ceil.length-1]-gap;
-      }
-
-      return arr;
+      
+      return new int[][]{ceil, floor};
     }
 
     public int moveResult(int curY, int dir)
@@ -232,13 +193,44 @@ public class Helicopter implements DomainGenerator
     {
       ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
       int curY = agent.getDiscValForAttribute(ATTY);
-
-      ObjectInstance map = s.getObject(MAP);
+      
+      //UPDATE SIGHT
+      ObjectInstance sight = s.getObject(SIGHT);
       int[][] arr = nextCeilFloor(s);
-      map.setValue(CEIL, arr[0]);
-      map.setValue(FLOOR, arr[1]);
+      sight.setValue(CEIL, arr[0]);
+      sight.setValue(FLOOR, arr[1]);
+      
+      //UPDATE MAP
+      for (int i=0; i<map[0].length-1; i++)
+      {
+        map[0][i] = map[0][i+1];
+        map[1][i] = map[1][i+1];
+      }
+      
+      int length = map[0].length;
+      int pastceil = map[0][length-2];
+      int height = sight.getDiscValForAttribute(HEIGHT);
+      int gap = height - map[0][length-2] - map[1][length-2];
+      
+      if (pastceil == 0)
+      {
+        map[0][length-1] = pastceil + ((int)(2*Math.random()));
+        map[1][length-1] = height - map[0][length-1] -gap;        
+      }
+      else if (pastceil == height-gap)
+      {
+        map[0][length-1] = pastceil - ((int)(2*Math.random()));
+        map[1][length-1] = height - map[0][length-1]-gap;        
+      }
+      else
+      {
+        map[0][length-1] = pastceil + ((int)(3*Math.random()) - 1);
+        map[1][length-1] = height - map[0][length-1]-gap;
+      }
+      
+      //System.out.println(Arrays.toString(sight.getIntArrayValue(CEIL)));
 
-      //sample directon with random roll
+      //UPDATE AGENT
       double r = Math.random();
       double sumProb = 0.;
       int dir = 0;
@@ -274,10 +266,10 @@ public class Helicopter implements DomainGenerator
         nagent.setValue(ATTY, this.moveResult(curY, i));
         nagent.setValue(TIME, nagent.getDiscValForAttribute(TIME)+ 1);
 
-        ObjectInstance nmap = ns.getObject(MAP);
+        ObjectInstance nsight = ns.getObject(SIGHT);
         int[][] arr = nextCeilFloor(ns);
-        nmap.setValue(CEIL, arr[0]);
-        nmap.setValue(FLOOR, arr[1]);
+        nsight.setValue(CEIL, arr[0]);
+        nsight.setValue(FLOOR, arr[1]);
         
         //create transition probability object and add to our list of outcomes
         tps.add(new TransitionProbability(ns, this.directionProbs[i]));
@@ -288,33 +280,15 @@ public class Helicopter implements DomainGenerator
     } 
   }
 
-  public int padding(State s)
-  {
-    ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
-    int ay = agent.getDiscValForAttribute(ATTY);
-
-    ObjectInstance map = s.getFirstObjectOfClass(MAP);
-    int[] ceil = map.getIntArrayValue(CEIL);
-    int[] floor = map.getIntArrayValue(FLOOR);
-    int height = map.getDiscValForAttribute(HEIGHT);
-
-
-    int pad =0;
-    pad += (ay - floor[0] + 1) * (ay - floor[0] + 1);
-    pad += (height - ceil[0] - ay) * (height - ceil[0] - ay);   
-
-    return height*height/2 - pad;
-  }
-
   public static boolean crash (State s)
   {
     ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
     int ay = agent.getDiscValForAttribute(ATTY);
 
-    ObjectInstance map = s.getFirstObjectOfClass(MAP);
-    int[] ceil = map.getIntArrayValue(CEIL);
-    int[] floor = map.getIntArrayValue(FLOOR);
-    int height = map.getDiscValForAttribute(HEIGHT);
+    ObjectInstance sight = s.getFirstObjectOfClass(SIGHT);
+    int[] ceil = sight.getIntArrayValue(CEIL);
+    int[] floor = sight.getIntArrayValue(FLOOR);
+    int height = sight.getDiscValForAttribute(HEIGHT);
     
     return ay+1 <= floor[0] || ay >= height - ceil[0]; 
   }
@@ -326,10 +300,20 @@ public class Helicopter implements DomainGenerator
       ObjectInstance agent = sprime.getFirstObjectOfClass(CLASSAGENT);
       int ay = agent.getDiscValForAttribute(ATTY);
       int t = agent.getDiscValForAttribute(TIME);
+      
+      ObjectInstance sight = s.getFirstObjectOfClass(SIGHT);
+      int[] ceil = sight.getIntArrayValue(CEIL);
+      int[] floor = sight.getIntArrayValue(FLOOR);
+      int height = sight.getDiscValForAttribute(HEIGHT);
 
-//      return -(4-ay)*(4-ay);
       if (crash(sprime)) return -1000;
-      else return 100;
+      else
+      {
+        int gap = height - ceil[0] - floor[0];
+        double center = floor[0] + gap/2.0;
+        return 100-100*(center - ay)*(center - ay);
+//        return 100;
+      }
 
     }
   }
@@ -384,30 +368,30 @@ public class Helicopter implements DomainGenerator
     @Override
     public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 
-      ObjectInstance map = s.getObject(MAP);
-      int[] ceil = map.getIntArrayValue(CEIL);
-      int[] floor = map.getIntArrayValue(FLOOR);
-      int h = map.getDiscValForAttribute(HEIGHT);
+      ObjectInstance sight = s.getObject(SIGHT);
+      int[] ceil = sight.getIntArrayValue(CEIL);
+      int[] floor = sight.getIntArrayValue(FLOOR);
+      int h = sight.getDiscValForAttribute(HEIGHT);
 
       //walls will be filled in black
       g2.setColor(Color.BLACK);
 
       //set up floats for the width and height of our domain
-      float fWidth = ceil.length;
+      float fWidth = map[0].length;
       float fHeight = h;
 
       //determine the width of a single cell on our canvas 
-      //such that the whole map can be painted
+      //such that the whole sight can be painted
       float width = cWidth / fWidth;
       float height = cHeight / fHeight;
 
-      //pass through each cell of our map and if it's a wall, paint a black 
+      //pass through each cell of our sight and if it's a wall, paint a black 
       //rectangle on our canvas of dimension widthxheight
-      for(int i = 0; i < ceil.length; i++){
+      for(int i = 0; i < map[0].length; i++){
         for(int j = 0; j < h; j++){
 
           //is there a wall here?
-          if(j+1 <= floor[i] || j >= h - ceil[i]){
+          if(j+1 <= map[1][i] || j >= h - map[0][i]){
 
             //left coordinate of cell on our canvas
             float rx = i*width;
@@ -432,21 +416,20 @@ public class Helicopter implements DomainGenerator
     public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
         float cWidth, float cHeight) {
 
-      ObjectInstance map = s.getObject(MAP);
-      int[] ceil = map.getIntArrayValue(CEIL);
-      int h = map.getDiscValForAttribute(HEIGHT);
+      ObjectInstance sight = s.getObject(SIGHT);
+      int h = sight.getDiscValForAttribute(HEIGHT);
 
       //System.out.println(padding(s));
       
-      //agent will be filled in gray
-      g2.setColor(Color.GRAY);
+      //agent will be filled in blue
+      g2.setColor(Color.BLUE);
 
       //set up floats for the width and height of our domain
-      float fWidth = ceil.length;
+      float fWidth = map[0].length;
       float fHeight = h;
 
       //determine the width of a single cell on our canvas 
-      //such that the whole map can be painted
+      //such that the whole sight can be painted
       float width = cWidth / fWidth;
       float height = cHeight / fHeight;
 
@@ -483,19 +466,12 @@ public class Helicopter implements DomainGenerator
     Helicopter heli = new Helicopter();
     Domain domain = heli.generateDomain();
 
-    int [][] start = new int[][]{
-        {3,3},
-        {3,2},
-        {3,3},
-        {2,2},
-        {2,2},
-        {2,3},
-        {3,3},
-        {2,2},
-        {2,2},
-        {1,2}
-    };
-    State initialState = Helicopter.makeState(domain,10,3, start);
+    int height = 10;
+    int length = 10;
+    int ahead = 2;
+    int gap = 3;
+    
+    State initialState = heli.initialState(domain, height, length, gap, ahead);
 
     Visualizer v = heli.getVisualizer();
     VisualExplorer exp = new VisualExplorer(domain, v, initialState);
