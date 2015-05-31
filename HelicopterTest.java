@@ -34,11 +34,11 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.LandmarkCol
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D.PolicyGlyphRenderStyle;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
-        
+
 
 public class HelicopterTest
 {
-  
+
   Helicopter heli;
   Domain domain;
   StateParser sp;        
@@ -48,102 +48,127 @@ public class HelicopterTest
   DiscreteStateHashFactory hashingFactory;  
   State initialState;
   
+  int timelimit = 100;
+
   public HelicopterTest(){
-    
+
     //create the domain
     heli = new Helicopter();
     domain = heli.generateDomain();
-    
+
     //create the state parser
     sp = new UniversalStateParser(domain); 
-    
+
     //define the task
-    int timelimit = 100;
-    
+
     rf = heli.new HeliRF();
     tf = heli.new HeliTF(timelimit);
     goalCondition = heli.new HeliGC(timelimit);
-    
+
     //set up the initial state of the task
-    initialState = Helicopter.makeState(domain,(int)(Math.random()*8) + 4);
-    
+    int [][] start = new int[][]{
+        {8,9},
+        {8,9},
+        {8,9},
+        {8,9},
+        {8,9},
+        {8,9},
+        {8,9},
+        {8,9}
+    };
+    initialState = Helicopter.makeState(domain,20,10, start);
+
     //set up the state hashing system
     hashingFactory = new DiscreteStateHashFactory();
     hashingFactory.setAttributesForClass(Helicopter.CLASSAGENT, 
-    domain.getObjectClass(Helicopter.CLASSAGENT).attributeList);   
-  
-//    VisualActionObserver observer = new VisualActionObserver(domain, 
-//    GridWorldVisualizer.getVisualizer(heli.getMap()));
-//    ((SADomain)this.domain).setActionObserverForAllAction(observer);
-//    observer.initGUI(); 
+        domain.getObjectClass(Helicopter.CLASSAGENT).attributeList);   
+
+    //    VisualActionObserver observer = new VisualActionObserver(domain, 
+    //    heli.getVisualizer());
+    //    ((SADomain)this.domain).setActionObserverForAllAction(observer);
+    //    observer.initGUI(); 
   }
-  
+
   public void visualize(String outputPath){
-    Visualizer v = GridWorldVisualizer.getVisualizer(heli.getMap());
+    Visualizer v = heli.getVisualizer();
     EpisodeSequenceVisualizer evis = new EpisodeSequenceVisualizer(v, domain, sp, outputPath);
   }
-  
+
   public void BFSExample(String outputPath){
-    
+
     if(!outputPath.endsWith("/")){
       outputPath = outputPath + "/";
     }
-    
+
     //BFS ignores reward; it just searches for a goal condition satisfying state
     DeterministicPlanner planner = new BFS(domain, goalCondition, hashingFactory); 
     planner.planFromState(initialState);
-    
+
     //capture the computed plan in a partial policy
     Policy p = new SDPlannerPolicy(planner);
-    
+
     //record the plan results to a file
     p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "planResult", sp);
 
   }
-  
+
   public void ValueIterationExample(String outputPath){
-    
+
     if(!outputPath.endsWith("/")){
       outputPath = outputPath + "/";
     }
-    
-    
+
+
     OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.001, 100);
     planner.planFromState(initialState);
-    
+
     //create a Q-greedy policy from the planner
     Policy p = new GreedyQPolicy((QComputablePlanner)planner);
-    
+
     //record the plan results to a file
     p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "planResult", sp);
   }
-  
+
   public void QLearningExample(String outputPath){
-    
+
     if(!outputPath.endsWith("/")){
       outputPath = outputPath + "/";
     }
-    
+
     //creating the learning algorithm object; discount= 0.99; initialQ=0.0; learning rate=0.9
     QComputablePlanner agent = new QLearning(domain, rf, tf, 0.99, hashingFactory, 0.0, 0.9);
-    
-    //run learning for 100 episodes
-    for(int i = 0; i < 2000; i++){
+
+    //run learning
+    double avg=0;
+    int numReach=0;
+    int mod=1000;
+    for(int i = 1; i <= 5000; i++){
       EpisodeAnalysis ea = ((LearningAgent) agent).runLearningEpisodeFrom(initialState);
-      ea.writeToFile(String.format("%se%03d", outputPath, i), sp); 
-      System.out.println(i + ": " + ea.numTimeSteps());
+      ea.writeToFile(String.format("%se%03d", outputPath, i), sp);
+      avg+=ea.numTimeSteps();
+      if (ea.numTimeSteps() == timelimit+1) numReach++;
+      if (i%mod == 0)
+      {
+        System.out.println(i + ": " + avg/mod + ", " + numReach);
+        numReach=0;
+        avg = 0;
+      }
     }
-    
+
     Policy p = new GreedyQPolicy(agent);
-    
+
     VisualActionObserver observer = new VisualActionObserver(domain, 
-    GridWorldVisualizer.getVisualizer(heli.getMap()));
-    observer.setFrameDelay(60);
+        heli.getVisualizer());
+    observer.setFrameDelay(200);
     ((SADomain)this.domain).setActionObserverForAllAction(observer);
     observer.initGUI(); 
     EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf);
-    System.out.println(ea.getActionSequenceString("\n"));
-    System.out.println(ea.numTimeSteps());
+    while (true)
+    {
+      p.evaluateBehavior(initialState, rf, tf);
+    }
+    //    System.out.println(ea.getActionSequenceString("\n"));
+    //    System.out.println(ea.numTimeSteps());
   }     
 
   public static void main(String[] args) {
@@ -151,16 +176,16 @@ public class HelicopterTest
 
     HelicopterTest example = new HelicopterTest();
     String outputPath = "helioutput/"; //directory to record results
-    
+
     //we will call planning and learning algorithms here
     example.QLearningExample(outputPath);
 
-//    
-//    //run the visualizer
-//    example.visualize(outputPath);
-    
+    //    
+    //    //run the visualizer
+    //    example.visualize(outputPath);
+
 
 
   }
-  
+
 }
