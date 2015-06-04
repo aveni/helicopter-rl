@@ -49,10 +49,13 @@ public class HelicopterTest
   State initialState;
   
   int timelimit = 100;    
-  int height = 10;
-  int length = 10;
+  int height = 15;
+  int length = 15;
   int gap = 3;
   int ahead = 1;
+  int numTrials = 10000;
+  double lr = .9;
+  double discount = .99;
 
   public HelicopterTest(){
 
@@ -80,8 +83,8 @@ public class HelicopterTest
 //        VisualActionObserver observer = new VisualActionObserver(domain, 
 //        heli.getVisualizer());
 //        ((SADomain)this.domain).setActionObserverForAllAction(observer);
-//        observer.setFrameDelay(100);
-//
+//        observer.setFrameDelay(40);
+////
 //        observer.initGUI(); 
   }
 
@@ -116,20 +119,20 @@ public class HelicopterTest
     }
 
     //creating the learning algorithm object; discount= 0.99; initialQ=0.0; learning rate=0.9
-    QComputablePlanner agent = new QLearning(domain, rf, tf, 0.99, hashingFactory, 0.0, 0.9);
+    QComputablePlanner agent = new QLearning(domain, rf, tf, discount, hashingFactory, 0.0, lr);
 
     //run learning
     double avg=0;
     int numReach=0;
     int mod=1000;
-    for(int i = 1; i <= 25000; i++){
+    for(int i = 1; i <= numTrials; i++){
       EpisodeAnalysis ea = ((LearningAgent) agent).runLearningEpisodeFrom(heli.initialState(domain,height, length, gap, ahead));
       ea.writeToFile(String.format("%se%03d", outputPath, i), sp);
       avg+=ea.numTimeSteps();
       if (ea.numTimeSteps() == timelimit+1) numReach++;
       if (i%mod == 0)
       {
-        System.out.println(i + ": " + avg/mod + ", " + numReach);
+        System.out.println(i + ":\t Avg: " + avg/mod + "\t NumReach: " + numReach);
         numReach=0;
         avg = 0;
       }
@@ -146,8 +149,9 @@ public class HelicopterTest
     int c = 1;
     while (true)
     {
-      System.out.println("Test " + c);
-      p.evaluateBehavior(heli.initialState(domain,height, length, gap, ahead), rf, tf);
+      System.out.print("Test " + c);
+      EpisodeAnalysis ea = p.evaluateBehavior(heli.initialState(domain,height, length, gap, ahead), rf, tf);
+      System.out.println("\tDuration: " + ea.numTimeSteps());
       c++;
     }
     //    System.out.println(ea.getActionSequenceString("\n"));
